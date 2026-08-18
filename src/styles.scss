@@ -37,16 +37,83 @@ body {
   height: 100%;
 }
 
-.cdk-overlay-pane .mat-mdc-select-panel {
+input.mat-mdc-input-element {
+  color: #f3fbf8 !important;
+  caret-color: #fff600;
+  -webkit-text-fill-color: #f3fbf8;
+}
+
+input.mat-mdc-input-element::placeholder {
+  color: #8ca59f !important;
+  opacity: 1;
+  -webkit-text-fill-color: #8ca59f;
+}
+
+.filters__search-field .mdc-floating-label,
+.filters__sport-field .mdc-floating-label {
+  color: #a9beb8 !important;
+  -webkit-text-fill-color: #a9beb8;
+}
+
+.filters__search-field .mdc-text-field--focused .mdc-floating-label,
+.filters__sport-field .mdc-text-field--focused .mdc-floating-label {
+  color: #fff600 !important;
+  -webkit-text-fill-color: #fff600;
+}
+
+.filters__search-field .mat-mdc-input-element,
+.filters__sport-field .mat-mdc-select-value {
+  color: #f3fbf8 !important;
+  -webkit-text-fill-color: #f3fbf8;
+}
+
+.filters__search-field .mat-mdc-form-field-icon-prefix,
+.filters__sport-field .mat-mdc-select-arrow {
+  color: #dcece8 !important;
+}
+
+.filters__search-field .mdc-text-field,
+.filters__sport-field .mdc-text-field {
+  background-color: #102c27;
+}
+
+.filters__search-field .mdc-text-field--focused .mdc-notched-outline__leading,
+.filters__search-field .mdc-text-field--focused .mdc-notched-outline__notch,
+.filters__search-field .mdc-text-field--focused .mdc-notched-outline__trailing,
+.filters__sport-field .mdc-text-field--focused .mdc-notched-outline__leading,
+.filters__sport-field .mdc-text-field--focused .mdc-notched-outline__notch,
+.filters__sport-field .mdc-text-field--focused .mdc-notched-outline__trailing {
+  border-color: #fff600 !important;
+}
+
+input.mat-mdc-input-element::selection,
+.mat-mdc-select-value-text::selection {
+  color: #071d19;
+  background: #fff600;
+}
+
+input.mat-mdc-input-element::-webkit-search-cancel-button {
+  filter: invert(1);
+}
+
+input.mat-mdc-input-element:-webkit-autofill,
+input.mat-mdc-input-element:-webkit-autofill:hover,
+input.mat-mdc-input-element:-webkit-autofill:focus {
+  box-shadow: 0 0 0 1000px #102c27 inset;
+  caret-color: #fff600;
+  -webkit-text-fill-color: #f3fbf8;
+}
+
+.filters__select-panel.mat-mdc-select-panel {
   border: 1px solid rgba(224, 255, 248, 0.14);
   background: #102c27;
 }
 
-.cdk-overlay-pane .mat-mdc-option {
+.filters__select-panel .mat-mdc-option {
   color: #eaf5f2;
 }
 
-.cdk-overlay-pane .mat-mdc-option:hover,
-.cdk-overlay-pane .mat-mdc-option.mdc-list-item--selected {
+.filters__select-panel .mat-mdc-option:hover,
+.filters__select-panel .mat-mdc-option.mdc-list-item--selected {
   background: #21453f;
 }

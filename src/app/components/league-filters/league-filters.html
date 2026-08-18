@@ -16,6 +16,7 @@
     <mat-select
       [value]="sportValue()"
       [disabled]="loadingSports() || !!sportsError()"
+      panelClass="filters__select-panel"
       (selectionChange)="sportChange.emit($event.value)"
     >
       <mat-option value="">All sports</mat-option>
