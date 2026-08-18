@@ -1,0 +1,93 @@
+.league-card {
+  display: grid;
+  grid-template-columns: 76px minmax(220px, 1.4fr) minmax(180px, 1fr) minmax(110px, auto);
+  gap: 16px;
+  align-items: center;
+  border: 0;
+  border-radius: 0;
+  padding: 9px 14px;
+  color: #effaf7;
+  background: #102c27;
+  transition:
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.league-card:hover {
+  background: #173a34;
+  box-shadow: inset 3px 0 0 #fff600;
+}
+
+.league-card__badge {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  aspect-ratio: 1;
+  border: 1px solid rgba(224, 255, 248, 0.16);
+  border-radius: 6px;
+  background: #1f403b;
+}
+
+.league-card__badge img {
+  max-width: 34px;
+  max-height: 34px;
+  object-fit: contain;
+}
+
+.league-card__badge mat-icon {
+  color: #8ca59f;
+}
+
+.league-card__main,
+.league-card__alternate,
+.league-card__season {
+  min-width: 0;
+}
+
+.league-card__main h2 {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: #f9fffd;
+  font-size: 0.96rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.league-card__main p,
+.league-card__alternate span,
+.league-card__season span {
+  margin: 4px 0 0;
+  color: #a9beb8;
+  font-size: 0.82rem;
+}
+
+.league-card__alternate strong {
+  display: block;
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: #e4f0ed;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+@media (max-width: 760px) {
+  .league-card {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .league-card__badge {
+    width: 64px;
+  }
+
+  .league-card__badge img {
+    max-width: 48px;
+    max-height: 48px;
+  }
+
+  .league-card__alternate,
+  .league-card__season {
+    grid-column: 2;
+  }
+}

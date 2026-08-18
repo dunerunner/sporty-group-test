@@ -1,0 +1,33 @@
+<mat-card class="league-card" appearance="outlined">
+  @if (badgeView$ | async; as badgeView) {
+    <div class="league-card__badge" aria-label="Season badge">
+      @if (badgeView.state === 'loading') {
+        <mat-spinner diameter="28" aria-label="Loading season badge" />
+      } @else if (badgeView.state === 'error') {
+        <mat-icon aria-hidden="true">image_not_supported</mat-icon>
+      } @else if (badgeView.badge?.strBadge) {
+        <img
+          [src]="badgeView.badge?.strBadge"
+          [alt]="leagueName + ' season badge'"
+          loading="lazy"
+        />
+      } @else {
+        <mat-icon aria-hidden="true">shield</mat-icon>
+      }
+    </div>
+
+    <div class="league-card__main">
+      <h2>{{ leagueName }}</h2>
+      <p>{{ sport }}</p>
+    </div>
+
+    <div class="league-card__alternate">
+      <span>Alternate</span>
+      <strong>{{ alternateName || 'Not provided' }}</strong>
+    </div>
+
+    <div class="league-card__season">
+      <span>{{ badgeView.badge?.strSeason || 'Season badge' }}</span>
+    </div>
+  }
+</mat-card>

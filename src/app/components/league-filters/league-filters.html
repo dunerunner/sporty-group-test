@@ -1,0 +1,30 @@
+<div class="filters" aria-label="League filters">
+  <mat-form-field appearance="outline" class="filters__search-field">
+    <mat-label>Search leagues</mat-label>
+    <mat-icon matPrefix>search</mat-icon>
+    <input
+      matInput
+      type="search"
+      [value]="searchValue()"
+      (input)="searchChange.emit($any($event.target).value)"
+      autocomplete="off"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="filters__sport-field">
+    <mat-label>Sport type</mat-label>
+    <mat-select
+      [value]="sportValue()"
+      [disabled]="loadingSports() || !!sportsError()"
+      (selectionChange)="sportChange.emit($event.value)"
+    >
+      <mat-option value="">All sports</mat-option>
+      @for (sport of sports(); track sport) {
+        <mat-option [value]="sport">{{ sport }}</mat-option>
+      }
+    </mat-select>
+    @if (sportsError()) {
+      <mat-hint>{{ sportsError() }}</mat-hint>
+    }
+  </mat-form-field>
+</div>

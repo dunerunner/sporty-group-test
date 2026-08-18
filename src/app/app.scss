@@ -1,0 +1,156 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  color: #f3fbf8;
+  background: #071d19;
+}
+
+.sportsbook {
+  min-height: 100dvh;
+  background: linear-gradient(180deg, rgba(33, 68, 63, 0.7), rgba(7, 29, 25, 0) 180px), #071d19;
+}
+
+.sportsbook__topbar {
+  border-bottom: 1px solid rgba(224, 255, 248, 0.08);
+  padding: 18px max(16px, calc((100vw - 1180px) / 2));
+  background: #132f2a;
+}
+
+.sportsbook__brand {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.sportsbook__brand mat-icon {
+  width: 34px;
+  height: 34px;
+  color: #fff600;
+  font-size: 34px;
+}
+
+.sportsbook__brand span {
+  display: block;
+  margin-bottom: 3px;
+  color: #fff600;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  color: #f9fffd;
+  font-size: 1.35rem;
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+.sportsbook__content {
+  width: min(1180px, calc(100% - 24px));
+  margin: 0 auto;
+  padding: 14px 0 40px;
+}
+
+.sportsbook__filters {
+  border: 1px solid rgba(224, 255, 248, 0.08);
+  border-radius: 8px 8px 0 0;
+  padding: 12px;
+  background: #1f403b;
+}
+
+.sportsbook__summary {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 12px 0;
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: #eaf5f2;
+  background: #234842;
+  white-space: nowrap;
+}
+
+.sportsbook__summary strong {
+  color: #fff600;
+  font-size: 0.92rem;
+}
+
+.sportsbook__summary span {
+  color: #b8cbc6;
+  font-size: 0.82rem;
+}
+
+.sportsbook__table-head {
+  display: grid;
+  grid-template-columns: 76px minmax(220px, 1.4fr) minmax(180px, 1fr) minmax(110px, auto);
+  gap: 16px;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 14px;
+  color: #dcece8;
+  background: #21453f;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.sportsbook__table-head span:first-child {
+  grid-column: 2;
+}
+
+.sportsbook__league-list {
+  display: grid;
+  gap: 1px;
+}
+
+.sportsbook__state-panel {
+  display: grid;
+  place-items: center;
+  gap: 14px;
+  min-height: 260px;
+  border: 1px dashed rgba(224, 255, 248, 0.2);
+  border-radius: 0 0 8px 8px;
+  color: #b8cbc6;
+  background: #102c27;
+  text-align: center;
+}
+
+.sportsbook__state-panel p {
+  margin: 0;
+}
+
+.sportsbook__state-panel--error {
+  border-color: #ff6b6b;
+  color: #ffb8b8;
+}
+
+.sportsbook__loader {
+  width: 42px;
+  aspect-ratio: 1;
+  border: 4px solid rgba(224, 255, 248, 0.2);
+  border-top-color: #fff600;
+  border-radius: 50%;
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 720px) {
+  .sportsbook__topbar {
+    padding: 16px 12px;
+  }
+
+  .sportsbook__content {
+    width: calc(100% - 16px);
+    padding-top: 8px;
+  }
+
+  .sportsbook__table-head {
+    display: none;
+  }
+}
