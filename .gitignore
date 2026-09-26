@@ -11,6 +11,22 @@
 npm-debug.log
 yarn-error.log
 
+# Python
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
 # IDEs and editors
 .idea/
 .project
