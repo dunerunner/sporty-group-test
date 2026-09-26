@@ -4,7 +4,42 @@ import hashlib
 from tools.file_tools import PROJECT_ROOT
 
 
+ALLOWED_EDIT_PREFIXES = (
+  "src/",
+  "public/",
+)
+ALLOWED_EDIT_FILES = {
+  "angular.json",
+  "package.json",
+  "package-lock.json",
+  "tsconfig.json",
+  "tsconfig.app.json",
+  "tsconfig.spec.json",
+  "eslint.config.js",
+}
+MAX_CHANGE_FILES = 20
+MAX_PROPOSED_FILE_BYTES = 200_000
+MAX_TOTAL_PROPOSED_BYTES = 1_000_000
+
+
+def _ensure_editable_path(path: str) -> None:
+  normalized = path.replace("\\", "/")
+
+  if (
+    normalized in ALLOWED_EDIT_FILES
+    or normalized.startswith(ALLOWED_EDIT_PREFIXES)
+  ):
+    return
+
+  raise ValueError(
+    "Agent proposals may only modify frontend "
+    f"project files. Rejected path: {path}"
+  )
+
+
 def _resolve_project_file(path: str):
+  _ensure_editable_path(path)
+
   file_path = (PROJECT_ROOT / path).resolve()
 
   if not file_path.is_relative_to(PROJECT_ROOT):
@@ -44,9 +79,33 @@ def propose_change_set(
 
   proposed_changes = []
 
+  if not changes:
+    raise ValueError("Change set must include at least one file.")
+
+  if len(changes) > MAX_CHANGE_FILES:
+    raise ValueError(
+      "Change set contains too many files. "
+      f"Limit: {MAX_CHANGE_FILES}."
+    )
+
+  total_bytes = 0
+
   for change in changes:
     path = change["path"]
     content = change["content"]
+    content_bytes = len(content.encode("utf-8"))
+
+    if content_bytes > MAX_PROPOSED_FILE_BYTES:
+      raise ValueError(
+        f"Proposed content is too large: {path}"
+      )
+
+    total_bytes += content_bytes
+
+    if total_bytes > MAX_TOTAL_PROPOSED_BYTES:
+      raise ValueError(
+        "Change set is too large."
+      )
 
     file_path = _resolve_project_file(path)
 

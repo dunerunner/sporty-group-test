@@ -27,7 +27,7 @@ from workflows.workflow_store import (
 
 
 MAX_AGENT_STEPS = 10
-DEFAULT_MAX_OUTPUT_TOKENS = 4000
+DEFAULT_MAX_OUTPUT_TOKENS = 1000
 
 
 SYSTEM_PROMPT = """

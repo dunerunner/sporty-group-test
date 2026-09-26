@@ -4,6 +4,7 @@ from tools.file_tools import PROJECT_ROOT
 
 
 GIT_TIMEOUT_SECONDS = 30
+MAX_GIT_OUTPUT_CHARS = 200_000
 
 
 def _run_git_command(
@@ -35,6 +36,12 @@ def _run_git_command(
     raise RuntimeError(
       result.stderr.strip()
       or "Git command failed."
+    )
+
+  if len(result.stdout) > MAX_GIT_OUTPUT_CHARS:
+    return (
+      result.stdout[:MAX_GIT_OUTPUT_CHARS]
+      + "\n\n[output truncated]"
     )
 
   return result.stdout
