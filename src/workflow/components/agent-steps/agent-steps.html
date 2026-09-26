@@ -1,0 +1,30 @@
+<section class="agent-steps" aria-labelledby="agent-steps-title">
+  <h2 id="agent-steps-title">Agent activity</h2>
+
+  <ol>
+    @for (step of steps(); track $index) {
+      <li [class.agent-steps__item--failed]="!step.success">
+        <span class="agent-steps__marker" aria-hidden="true">{{ step.success ? '✓' : '!' }}</span>
+        <div class="agent-steps__content">
+          <strong>{{ labelFor(step) }}</strong>
+          @if (summaryFor(step); as summary) {
+            <p>{{ summary }}</p>
+          }
+
+          @if (hasTechnicalDetails(step)) {
+            <details>
+              <summary>Technical details</summary>
+              <pre>Arguments: {{ step.arguments | json }}</pre>
+              @if (step.result !== undefined) {
+                <pre>Result: {{ step.result | json }}</pre>
+              }
+              @if (step.error) {
+                <pre>Error: {{ step.error }}</pre>
+              }
+            </details>
+          }
+        </div>
+      </li>
+    }
+  </ol>
+</section>

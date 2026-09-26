@@ -1,0 +1,45 @@
+:host {
+  display: block;
+}
+
+.error-panel {
+  display: grid;
+  gap: 12px;
+  border: 1px solid #f0a8a8;
+  border-radius: 8px;
+  padding: 16px;
+  color: #451a1a;
+  background: #fff4f4;
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+h2 {
+  font-size: 1rem;
+}
+
+p {
+  margin-top: 4px;
+  color: #723333;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+pre {
+  overflow: auto;
+  max-height: 220px;
+  margin: 10px 0 0;
+  border-radius: 6px;
+  padding: 12px;
+  color: #f7fafc;
+  background: #1f2937;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}

@@ -1,0 +1,20 @@
+<details class="file-diff" open>
+  <summary>
+    <span>{{ change().path }}</span>
+    @if (!change().changed) {
+      <em>No content changes</em>
+    }
+  </summary>
+
+  <pre aria-label="Unified diff for {{ change().path }}">
+@for (line of lines(); track $index) {<code [class]="'file-diff__line file-diff__line--' + line.kind">{{ line.content || ' ' }}</code>
+}</pre>
+
+  <details class="file-diff__technical">
+    <summary>Technical metadata</summary>
+    <dl>
+      <dt>Original hash</dt>
+      <dd>{{ change().originalHash }}</dd>
+    </dl>
+  </details>
+</details>

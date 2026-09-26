@@ -1,0 +1,23 @@
+<section class="task-input" aria-labelledby="task-input-title">
+  <div class="task-input__header">
+    <div>
+      <span>Task</span>
+      <h2 id="task-input-title">What should the agent change?</h2>
+    </div>
+  </div>
+
+  <textarea
+    [ngModel]="problem()"
+    (ngModelChange)="problemChange.emit($event)"
+    placeholder="Describe the bug, feature, or code change..."
+    rows="5"
+    [disabled]="loading()"
+  ></textarea>
+
+  <div class="task-input__actions">
+    @if (loadingMessage()) {
+      <p aria-live="polite">{{ loadingMessage() }}</p>
+    }
+    <button type="button" [disabled]="!canAnalyze()" (click)="analyze.emit()">Analyze</button>
+  </div>
+</section>

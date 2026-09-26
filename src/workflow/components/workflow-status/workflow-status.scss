@@ -1,0 +1,96 @@
+:host {
+  display: block;
+}
+
+.workflow-status {
+  border: 1px solid #d8dee4;
+  border-radius: 8px;
+  padding: 16px;
+  background: #ffffff;
+}
+
+.workflow-status__heading {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+h2 {
+  margin: 0;
+  color: #24292f;
+  font-size: 1rem;
+}
+
+.workflow-status__heading span {
+  border: 1px solid #d0d7de;
+  border-radius: 999px;
+  padding: 4px 9px;
+  color: #57606a;
+  background: #f6f8fa;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+ol {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.workflow-status__step {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  color: #57606a;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.workflow-status__marker {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #d0d7de;
+  border-radius: 50%;
+  color: #6e7781;
+  background: #f6f8fa;
+  font-size: 0.78rem;
+}
+
+.workflow-status__step--done .workflow-status__marker {
+  border-color: #1a7f37;
+  color: #ffffff;
+  background: #1a7f37;
+}
+
+.workflow-status__step--current {
+  color: #0969da;
+}
+
+.workflow-status__step--current .workflow-status__marker {
+  border-color: #0969da;
+  box-shadow: inset 0 0 0 6px #ffffff;
+  background: #0969da;
+}
+
+.workflow-status__step--failed {
+  color: #cf222e;
+}
+
+.workflow-status__step--failed .workflow-status__marker {
+  border-color: #cf222e;
+  color: #ffffff;
+  background: #cf222e;
+}
+
+@media (max-width: 760px) {
+  ol {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

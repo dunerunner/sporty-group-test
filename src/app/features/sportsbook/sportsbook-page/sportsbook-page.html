@@ -1,0 +1,63 @@
+<div class="sportsbook">
+  <header class="sportsbook__topbar" aria-labelledby="page-title">
+    <div class="sportsbook__brand">
+      <mat-icon aria-hidden="true">adjust</mat-icon>
+      <div>
+        <span>Sports leagues</span>
+        <h1 id="page-title">League Explorer</h1>
+      </div>
+    </div>
+
+  </header>
+
+  <main class="sportsbook__content">
+    <section class="sportsbook__filters" aria-label="League search and filters">
+      <app-league-filters
+        [sports]="sports()"
+        [searchValue]="searchTerm()"
+        [sportValue]="sportFilter()"
+        [loadingSports]="isLoadingSports()"
+        [sportsError]="sportsError()"
+        (searchChange)="updateSearchTerm($event)"
+        (sportChange)="updateSportFilter($event)"
+      />
+    </section>
+
+    <section class="sportsbook__summary" aria-label="League results">
+      <strong>{{ filteredLeagues().length }}</strong>
+      <span>leagues shown</span>
+    </section>
+
+    <div class="sportsbook__table-head" aria-hidden="true">
+      <span>League</span>
+      <span>Alternate</span>
+      <span>Badge season</span>
+    </div>
+
+    @if (isLoadingLeagues()) {
+      <section class="sportsbook__state-panel" aria-live="polite">
+        <span class="sportsbook__loader"></span>
+        <p>Loading leagues...</p>
+      </section>
+    } @else if (leagueError()) {
+      <section class="sportsbook__state-panel sportsbook__state-panel--error" aria-live="assertive">
+        <p>{{ leagueError() }}</p>
+      </section>
+    } @else if (!filteredLeagues().length) {
+      <section class="sportsbook__state-panel" aria-live="polite">
+        <p>No leagues match the selected filters.</p>
+      </section>
+    } @else {
+      <section class="sportsbook__league-list" aria-label="Sports leagues">
+        @for (league of filteredLeagues(); track league.idLeague) {
+          <app-league-card
+            [leagueId]="league.idLeague"
+            [leagueName]="league.strLeague"
+            [sport]="league.strSport"
+            [alternateName]="league.strLeagueAlternate ?? null"
+          />
+        }
+      </section>
+    }
+  </main>
+</div>

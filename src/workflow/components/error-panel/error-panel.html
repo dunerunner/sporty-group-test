@@ -1,0 +1,13 @@
+<section class="error-panel" aria-live="assertive">
+  <div>
+    <h2>{{ error().title }}</h2>
+    <p>{{ error().message }}</p>
+  </div>
+
+  @if (error().detail) {
+    <details>
+      <summary>Technical details</summary>
+      <pre>{{ error().detail }}</pre>
+    </details>
+  }
+</section>

@@ -1,0 +1,57 @@
+<section class="verification-results" aria-labelledby="verification-results-title">
+  <div class="verification-results__heading">
+    <h2 id="verification-results-title">Verification</h2>
+    <span [class.verification-results__badge--failed]="!verification().success">
+      {{ verification().success ? 'Passed' : 'Failed' }}
+    </span>
+  </div>
+
+  <div class="verification-results__checks">
+    @for (check of checks; track check.key) {
+      @if (resultFor(check.key); as result) {
+        <details class="verification-results__check">
+          <summary>
+            <span
+              class="verification-results__marker"
+              [class.verification-results__marker--failed]="!result.success"
+              aria-hidden="true"
+            >
+              {{ result.success ? '✓' : '!' }}
+            </span>
+            <strong>{{ check.label }}</strong>
+            <em>{{ result.success ? 'Passed' : 'Failed' }}</em>
+          </summary>
+
+          @if (result.exitCode !== null) {
+            <p>Exit code: {{ result.exitCode }}</p>
+          }
+          @if (result.stdout) {
+            <h3>stdout</h3>
+            <pre>{{ result.stdout }}</pre>
+          }
+          @if (result.stderr) {
+            <h3>stderr</h3>
+            <pre>{{ result.stderr }}</pre>
+          }
+        </details>
+      }
+    }
+  </div>
+
+  @if (verification().success) {
+    <p class="verification-results__summary">All verification checks passed.</p>
+  } @else {
+    <p class="verification-results__summary verification-results__summary--failed">
+      Verification failed at {{ verification().failedCheck || 'an unknown check' }}.
+    </p>
+  }
+
+  @if (status() === 'verification_failed') {
+    <div class="verification-results__repair">
+      @if (loadingMessage()) {
+        <p aria-live="polite">{{ loadingMessage() }}</p>
+      }
+      <button type="button" [disabled]="!canRepair()" (click)="repair.emit()">Ask agent to repair</button>
+    </div>
+  }
+</section>

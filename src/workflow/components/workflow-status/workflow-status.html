@@ -1,0 +1,21 @@
+<section class="workflow-status" aria-labelledby="workflow-status-title">
+  <div class="workflow-status__heading">
+    <h2 id="workflow-status-title">Workflow</h2>
+    <span>{{ statusLabel() }}</span>
+  </div>
+
+  <ol>
+    @for (step of steps(); track step.label) {
+      <li [class]="'workflow-status__step workflow-status__step--' + step.state">
+        <span class="workflow-status__marker" aria-hidden="true">
+          @if (step.state === 'done') {
+            ✓
+          } @else if (step.state === 'failed') {
+            !
+          }
+        </span>
+        <span>{{ step.label }}</span>
+      </li>
+    }
+  </ol>
+</section>

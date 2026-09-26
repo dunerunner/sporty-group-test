@@ -1,0 +1,17 @@
+<section class="proposal-viewer" aria-labelledby="proposal-viewer-title">
+  <div class="proposal-viewer__heading">
+    <div>
+      <h2 id="proposal-viewer-title">Proposed changes</h2>
+      <p>
+        {{ changedCount() }}
+        {{ changedCount() === 1 ? 'file changed' : 'files changed' }}
+      </p>
+    </div>
+  </div>
+
+  <div class="proposal-viewer__files">
+    @for (change of proposal().changes; track change.path) {
+      <app-file-diff [change]="change" />
+    }
+  </div>
+</section>

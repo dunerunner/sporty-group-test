@@ -1,0 +1,96 @@
+<div class="workflow-page">
+  <header class="workflow-page__header">
+    <div>
+      <span>AI Coding Agent</span>
+      <h1>Change review workflow</h1>
+    </div>
+
+    @if (store.state().workflowId) {
+      <button type="button" class="workflow-page__new-task" (click)="store.reset()">New task</button>
+    }
+  </header>
+
+  <main class="workflow-page__main">
+    <app-task-input
+      [problem]="store.state().problem"
+      [canAnalyze]="store.canAnalyze()"
+      [loading]="store.state().loading && store.state().status === 'analyzing'"
+      [loadingMessage]="store.state().status === 'analyzing' ? store.state().loadingMessage : null"
+      (problemChange)="store.updateProblem($event)"
+      (analyze)="store.analyze()"
+    />
+
+    @if (store.state().status) {
+      <app-workflow-status [status]="store.state().status" />
+    }
+
+    @if (store.state().error; as error) {
+      <app-error-panel [error]="error" />
+    }
+
+    @if (store.state().answer; as answer) {
+      <app-agent-analysis [answer]="answer" />
+    }
+
+    @if (store.state().steps.length) {
+      <app-agent-steps [steps]="store.state().steps" />
+    }
+
+    @if (store.state().proposal; as proposal) {
+      <app-proposal-viewer [proposal]="proposal" />
+    }
+
+    @if (store.state().status === 'awaiting_approval') {
+      <app-approval-actions
+        [disabled]="!store.canApprove()"
+        [loadingMessage]="store.state().loading ? store.state().loadingMessage : null"
+        (approve)="store.approve()"
+        (reject)="store.reject()"
+      />
+    }
+
+    @if (store.state().status === 'rejected') {
+      <section class="workflow-page__terminal-state">
+        <h2>{{ statusLabels.rejected }}</h2>
+        <p>No files were modified.</p>
+      </section>
+    }
+
+    @if (store.state().status === 'proposal_stale') {
+      <section class="workflow-page__terminal-state workflow-page__terminal-state--warning">
+        <h2>Proposal is outdated</h2>
+        <p>
+          One or more files changed after this proposal was created. The proposal cannot safely be
+          applied.
+        </p>
+      </section>
+    }
+
+    @if (store.state().status === 'apply_failed') {
+      <section class="workflow-page__terminal-state workflow-page__terminal-state--error">
+        <h2>Failed to apply changes</h2>
+        <p>The backend could not safely apply the complete change set.</p>
+      </section>
+    }
+
+    @if (store.state().status === 'repair_limit_reached') {
+      <section class="workflow-page__terminal-state workflow-page__terminal-state--error">
+        <h2>Repair limit reached</h2>
+        <p>
+          The agent could not resolve the verification failure after multiple attempts. Manual
+          intervention is required.
+        </p>
+      </section>
+    }
+
+    @if (store.state().verification; as verification) {
+      <app-verification-results
+        [verification]="verification"
+        [status]="store.state().status"
+        [canRepair]="store.canRepair()"
+        [loadingMessage]="store.state().status === 'verification_failed' ? store.state().loadingMessage : null"
+        (repair)="store.repair()"
+      />
+    }
+  </main>
+</div>

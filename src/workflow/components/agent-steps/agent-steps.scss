@@ -1,0 +1,87 @@
+:host {
+  display: block;
+}
+
+.agent-steps {
+  border: 1px solid #d8dee4;
+  border-radius: 8px;
+  padding: 16px;
+  background: #ffffff;
+}
+
+h2 {
+  margin: 0 0 12px;
+  color: #24292f;
+  font-size: 1rem;
+}
+
+ol {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+li {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.agent-steps__marker {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: #ffffff;
+  background: #1a7f37;
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.agent-steps__item--failed .agent-steps__marker {
+  background: #cf222e;
+}
+
+.agent-steps__content {
+  min-width: 0;
+}
+
+strong {
+  display: block;
+  color: #24292f;
+  font-size: 0.92rem;
+}
+
+p {
+  margin: 3px 0 0;
+  color: #57606a;
+  font-size: 0.86rem;
+}
+
+details {
+  margin-top: 8px;
+}
+
+summary {
+  cursor: pointer;
+  color: #0969da;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+pre {
+  overflow: auto;
+  max-height: 260px;
+  margin: 8px 0 0;
+  border-radius: 6px;
+  padding: 10px;
+  color: #dbeafe;
+  background: #0f172a;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}

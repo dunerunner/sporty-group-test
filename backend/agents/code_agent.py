@@ -1,7 +1,7 @@
+import json
 import os
 
-from google import genai
-from google.genai import types
+from openai import OpenAI
 
 from agents.models import AgentResult, AgentStep
 from tools.edit_tools import propose_change_set
@@ -9,6 +9,12 @@ from tools.file_tools import (
   get_project_structure,
   read_file,
   search_code,
+)
+from tools.git_tools import (
+  get_git_branch,
+  get_git_diff,
+  get_git_staged_diff,
+  get_git_status,
 )
 from tools.test_tools import run_tests
 from workflows.workflow_store import (
@@ -21,6 +27,7 @@ from workflows.workflow_store import (
 
 
 MAX_AGENT_STEPS = 10
+DEFAULT_MAX_OUTPUT_TOKENS = 4000
 
 
 SYSTEM_PROMPT = """
@@ -29,8 +36,8 @@ changes for an Angular project.
 
 The user's requirement is the source of truth.
 
-You have access to tools that allow you to inspect and test
-the project and propose code modifications.
+You have access to tools that allow you to inspect the project,
+inspect its Git state, run tests, and propose code modifications.
 
 When investigating a requirement:
 
@@ -58,17 +65,36 @@ When investigating a requirement:
 9. Determine whether existing tests remain valid under the
    requested behavior.
 
-10. When investigating a bug or existing failure, use run_tests
+10. Inspect Git state when it is relevant to understanding
+    existing developer changes.
+
+11. Use get_git_status to determine whether the working tree
+    contains uncommitted changes.
+
+12. Use get_git_diff when you need to understand unstaged
+    developer changes.
+
+13. Use get_git_staged_diff when staged changes may be relevant.
+
+14. Use get_git_branch when branch context is useful.
+
+15. Treat existing uncommitted developer changes as intentional
+    unless there is strong evidence otherwise.
+
+16. Never propose reverting or overwriting unrelated developer
+    changes.
+
+17. When investigating a bug or existing failure, use run_tests
     when running the test suite would provide useful evidence.
 
-11. Use test results as evidence. Never claim that tests pass
+18. Use test results as evidence. Never claim that tests pass
     or fail unless you actually ran them.
 
-12. Base your diagnosis and proposal on the actual project code.
+19. Base your diagnosis and proposal on the actual project code.
 
-13. Explain the likely cause or required behavior change.
+20. Explain the likely cause or required behavior change.
 
-14. Propose the complete logical change required to satisfy the
+21. Propose the complete logical change required to satisfy the
     user's requirement.
 
 When you identify a concrete code change, use propose_change_set.
@@ -108,7 +134,8 @@ Never:
 - weaken an assertion unnecessarily,
 - disable lint rules to make verification pass,
 - revert explicitly requested behavior just because an old test
-  expects the previous behavior.
+  expects the previous behavior,
+- overwrite unrelated uncommitted developer work.
 
 If an existing test exposes an actual implementation bug rather
 than an outdated expectation, fix the implementation instead.
@@ -128,67 +155,124 @@ TOOLS = {
   "read_file": read_file,
   "search_code": search_code,
   "run_tests": run_tests,
+  "get_git_branch": get_git_branch,
+  "get_git_status": get_git_status,
+  "get_git_diff": get_git_diff,
+  "get_git_staged_diff": get_git_staged_diff,
   "propose_change_set": propose_change_set,
 }
 
 
+def tool_schema(
+  name: str,
+  description: str,
+  parameters: dict | None = None,
+) -> dict:
+  return {
+    "type": "function",
+    "function": {
+      "name": name,
+      "description": description,
+      "parameters": parameters
+      or {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": False,
+      },
+    },
+  }
+
+
 TOOL_DECLARATIONS = [
-  types.FunctionDeclaration(
+  tool_schema(
     name="get_project_structure",
     description=(
       "Return a list of files in the Angular project. "
       "Use this when you need to discover which files exist."
     ),
   ),
-  types.FunctionDeclaration(
+  tool_schema(
     name="read_file",
     description=(
       "Read the contents of a file from the Angular project."
     ),
-    parameters=types.Schema(
-      type=types.Type.OBJECT,
-      properties={
-        "path": types.Schema(
-          type=types.Type.STRING,
-          description=(
+    parameters={
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": (
             "Path relative to the project root, for example "
             "'src/app/app.component.ts'."
           ),
-        ),
+        },
       },
-      required=["path"],
-    ),
+      "required": ["path"],
+      "additionalProperties": False,
+    },
   ),
-  types.FunctionDeclaration(
+  tool_schema(
     name="search_code",
     description=(
       "Search for text inside Angular project source files. "
       "Use this to locate implementation code and related "
       "tests before proposing changes."
     ),
-    parameters=types.Schema(
-      type=types.Type.OBJECT,
-      properties={
-        "query": types.Schema(
-          type=types.Type.STRING,
-          description=(
+    parameters={
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": (
             "Text to search for, for example "
             "'HttpClient', 'subscribe(', 'blue', "
             "'ProductService', or a component name."
           ),
-        ),
+        },
       },
-      required=["query"],
-    ),
+      "required": ["query"],
+      "additionalProperties": False,
+    },
   ),
-  types.FunctionDeclaration(
+  tool_schema(
     name="run_tests",
     description=(
       "Run the Angular project's test suite and return "
       "whether it passed together with the command output."
     ),
   ),
-  types.FunctionDeclaration(
+  tool_schema(
+    name="get_git_branch",
+    description=(
+      "Return the currently checked-out Git branch. "
+      "This is a read-only operation."
+    ),
+  ),
+  tool_schema(
+    name="get_git_status",
+    description=(
+      "Return the Git working tree status, including "
+      "modified, staged, and untracked files. "
+      "This is a read-only operation."
+    ),
+  ),
+  tool_schema(
+    name="get_git_diff",
+    description=(
+      "Return the current unstaged Git diff. Use this when "
+      "you need to understand existing uncommitted developer "
+      "changes. This is a read-only operation."
+    ),
+  ),
+  tool_schema(
+    name="get_git_staged_diff",
+    description=(
+      "Return the currently staged Git diff. Use this when "
+      "you need to understand changes already staged by the "
+      "developer. This is a read-only operation."
+    ),
+  ),
+  tool_schema(
     name="propose_change_set",
     description=(
       "Propose modifications to one or more existing project "
@@ -197,47 +281,56 @@ TOOL_DECLARATIONS = [
       "changes behavior covered by those tests. The tool "
       "generates diffs but does not modify files."
     ),
-    parameters=types.Schema(
-      type=types.Type.OBJECT,
-      properties={
-        "changes": types.Schema(
-          type=types.Type.ARRAY,
-          description=(
+    parameters={
+      "type": "object",
+      "properties": {
+        "changes": {
+          "type": "array",
+          "description": (
             "Files that should be changed together."
           ),
-          items=types.Schema(
-            type=types.Type.OBJECT,
-            properties={
-              "path": types.Schema(
-                type=types.Type.STRING,
-                description=(
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": (
                   "Path relative to the project root."
                 ),
-              ),
-              "content": types.Schema(
-                type=types.Type.STRING,
-                description=(
+              },
+              "content": {
+                "type": "string",
+                "description": (
                   "Complete proposed new contents "
                   "of the file."
                 ),
-              ),
+              },
             },
-            required=[
-              "path",
-              "content",
-            ],
-          ),
-        ),
+            "required": ["path", "content"],
+            "additionalProperties": False,
+          },
+        },
       },
-      required=["changes"],
-    ),
+      "required": ["changes"],
+      "additionalProperties": False,
+    },
   ),
 ]
 
 
-client = genai.Client(
-  api_key=os.getenv("GEMINI_API_KEY")
-)
+client: OpenAI | None = None
+
+
+def get_client() -> OpenAI:
+  global client
+
+  if client is None:
+    client = OpenAI(
+      api_key=os.getenv("OPENROUTER_API_KEY"),
+      base_url="https://openrouter.ai/api/v1",
+    )
+
+  return client
 
 
 def execute_tool(name: str, arguments: dict):
@@ -258,39 +351,57 @@ def run_agent(
 ) -> tuple[str, list[AgentStep], str | None]:
   steps: list[AgentStep] = []
   proposal_id = None
-
-  chat = client.chats.create(
-    model="gemini-3-flash-preview",
-    config=types.GenerateContentConfig(
-      system_instruction=SYSTEM_PROMPT,
-      tools=[
-        types.Tool(
-          function_declarations=TOOL_DECLARATIONS
-        )
-      ],
-      automatic_function_calling=types.AutomaticFunctionCallingConfig(
-        disable=True
-      ),
-    ),
+  model = os.getenv(
+    "OPENROUTER_MODEL",
+    os.getenv("OPENAI_MODEL", "openai/gpt-4o"),
   )
-
-  response = chat.send_message(prompt)
+  max_output_tokens = int(
+    os.getenv(
+      "OPENROUTER_MAX_TOKENS",
+      str(DEFAULT_MAX_OUTPUT_TOKENS),
+    )
+  )
+  messages = [
+    {
+      "role": "system",
+      "content": SYSTEM_PROMPT,
+    },
+    {
+      "role": "user",
+      "content": prompt,
+    },
+  ]
 
   for step in range(MAX_AGENT_STEPS):
     print(f"\n🤖 AGENT STEP {step + 1}")
 
-    function_calls = response.function_calls
+    response = get_client().chat.completions.create(
+      model=model,
+      messages=messages,
+      tools=TOOL_DECLARATIONS,
+      tool_choice="auto",
+      max_tokens=max_output_tokens,
+    )
 
-    if not function_calls:
+    message = response.choices[0].message
+    tool_calls = message.tool_calls
+
+    if not tool_calls:
       print("✅ Agent finished")
 
-      return response.text, steps, proposal_id
+      return message.content or "", steps, proposal_id
 
-    function_responses = []
+    messages.append(
+      message.model_dump(
+        exclude_none=True
+      )
+    )
 
-    for function_call in function_calls:
-      name = function_call.name
-      arguments = dict(function_call.args)
+    for tool_call in tool_calls:
+      name = tool_call.function.name
+      arguments = json.loads(
+        tool_call.function.arguments or "{}"
+      )
 
       try:
         result = execute_tool(
@@ -313,13 +424,17 @@ def run_agent(
           )
         )
 
-        function_responses.append(
-          types.Part.from_function_response(
-            name=name,
-            response={
-              "result": result
-            },
-          )
+        messages.append(
+          {
+            "role": "tool",
+            "tool_call_id": tool_call.id,
+            "content": json.dumps(
+              {
+                "result": result
+              },
+              default=str,
+            ),
+          }
         )
 
       except Exception as error:
@@ -332,18 +447,17 @@ def run_agent(
           )
         )
 
-        function_responses.append(
-          types.Part.from_function_response(
-            name=name,
-            response={
-              "error": str(error)
-            },
-          )
+        messages.append(
+          {
+            "role": "tool",
+            "tool_call_id": tool_call.id,
+            "content": json.dumps(
+              {
+                "error": str(error)
+              }
+            ),
+          }
         )
-
-    response = chat.send_message(
-      function_responses
-    )
 
   raise RuntimeError(
     f"Agent exceeded maximum of {MAX_AGENT_STEPS} steps"
@@ -426,6 +540,11 @@ The project currently contains the previously applied changes.
 
 Investigate the failure using the available tools.
 
+Inspect the current Git state when it helps distinguish the
+agent's changes from unrelated developer changes.
+
+Do not overwrite or revert unrelated developer work.
+
 Do not assume that a verification failure means the requested
 behavior should be reverted.
 
@@ -490,7 +609,8 @@ Never:
 - disable lint rules to hide violations,
 - bypass build checks,
 - revert explicitly requested behavior solely because an old
-  test expects the previous behavior.
+  test expects the previous behavior,
+- overwrite unrelated developer changes.
 
 Use propose_change_set to propose all related changes together.
 

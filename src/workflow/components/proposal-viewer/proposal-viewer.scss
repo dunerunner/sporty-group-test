@@ -1,0 +1,39 @@
+:host {
+  display: block;
+}
+
+.proposal-viewer {
+  display: grid;
+  gap: 14px;
+  border: 1px solid #d8dee4;
+  border-radius: 8px;
+  padding: 16px;
+  background: #ffffff;
+}
+
+.proposal-viewer__heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+h2 {
+  color: #24292f;
+  font-size: 1rem;
+}
+
+p {
+  margin-top: 4px;
+  color: #57606a;
+  font-size: 0.86rem;
+}
+
+.proposal-viewer__files {
+  display: grid;
+  gap: 12px;
+}

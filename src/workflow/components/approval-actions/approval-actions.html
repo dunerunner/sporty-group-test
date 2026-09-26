@@ -1,0 +1,14 @@
+<section class="approval-actions" aria-label="Proposal approval actions">
+  @if (loadingMessage()) {
+    <p aria-live="polite">{{ loadingMessage() }}</p>
+  }
+
+  <div>
+    <button type="button" class="approval-actions__reject" [disabled]="disabled()" (click)="reject.emit()">
+      Reject
+    </button>
+    <button type="button" class="approval-actions__approve" [disabled]="disabled()" (click)="approve.emit()">
+      Approve changes
+    </button>
+  </div>
+</section>

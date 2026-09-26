@@ -1,0 +1,76 @@
+:host {
+  display: block;
+}
+
+.task-input {
+  display: grid;
+  gap: 14px;
+  border: 1px solid #d8dee4;
+  border-radius: 8px;
+  padding: 18px;
+  background: #ffffff;
+}
+
+.task-input__header span {
+  display: block;
+  margin-bottom: 4px;
+  color: #57606a;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h2 {
+  margin: 0;
+  color: #24292f;
+  font-size: 1.1rem;
+}
+
+textarea {
+  min-height: 112px;
+  resize: vertical;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  padding: 12px;
+  color: #24292f;
+  background: #f6f8fa;
+  font: inherit;
+  line-height: 1.45;
+}
+
+textarea:focus {
+  outline: 2px solid #0969da;
+  outline-offset: 1px;
+  background: #ffffff;
+}
+
+.task-input__actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.task-input__actions p {
+  margin: 0 auto 0 0;
+  color: #57606a;
+  font-size: 0.9rem;
+}
+
+button {
+  border: 1px solid #1f883d;
+  border-radius: 6px;
+  padding: 9px 16px;
+  color: #ffffff;
+  background: #1f883d;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+button:disabled {
+  border-color: #d0d7de;
+  color: #8c959f;
+  background: #f6f8fa;
+  cursor: not-allowed;
+}

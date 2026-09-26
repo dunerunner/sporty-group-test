@@ -1,0 +1,94 @@
+:host {
+  display: block;
+}
+
+.file-diff {
+  border: 1px solid #d8dee4;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.file-diff > summary {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  color: #24292f;
+  background: #f6f8fa;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.86rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+em {
+  margin-left: auto;
+  color: #57606a;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 700;
+}
+
+pre {
+  overflow: auto;
+  margin: 0;
+  background: #ffffff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.file-diff__line {
+  display: block;
+  min-height: 1.5em;
+  padding: 0 12px;
+  color: #24292f;
+  white-space: pre;
+}
+
+.file-diff__line--added {
+  color: #116329;
+  background: #dafbe1;
+}
+
+.file-diff__line--removed {
+  color: #82071e;
+  background: #ffebe9;
+}
+
+.file-diff__line--meta {
+  color: #57606a;
+  background: #ddf4ff;
+}
+
+.file-diff__technical {
+  border-top: 1px solid #d8dee4;
+  padding: 8px 12px 12px;
+  color: #57606a;
+  font-size: 0.82rem;
+}
+
+.file-diff__technical summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 6px 10px;
+  margin: 8px 0 0;
+}
+
+dt {
+  font-weight: 800;
+}
+
+dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
